@@ -7,6 +7,7 @@ import { Star, Trash2 } from "lucide-react";
 export default function UserReviews() {
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
+  // Removed unused loading state
 
   const fetchMyReviews = async () => {
     if (!user) return;

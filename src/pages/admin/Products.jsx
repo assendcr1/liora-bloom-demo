@@ -1,3 +1,4 @@
+// src/pages/admin/Products.jsx
 import { useState } from "react";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import { useProducts } from "../../context/ProductContext";

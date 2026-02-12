@@ -1,6 +1,6 @@
 // src/pages/admin/Users.jsx
 import { useState, useEffect } from "react";
-import { Trash2, ShieldCheck } from "lucide-react";
+import { Trash2, ShieldCheck } from "lucide-react"; // Removed Plus
 import { supabase } from "../../lib/supabase";
 
 export default function AdminUsers() {
