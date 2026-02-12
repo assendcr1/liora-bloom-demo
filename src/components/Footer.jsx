@@ -20,9 +20,9 @@ export default function Footer() {
             Established September 2025. Meaningful floral design created to brighten life's most special moments through light and happiness.
           </p>
           <div className="flex gap-4">
-            <a href="#" className="text-stone-400 hover:text-#c5a059 transition-colors"><Instagram size={20} /></a>
-            <a href="#" className="text-stone-400 hover:text-#c5a059 transition-colors"><Facebook size={20} /></a>
-            <a href="#" className="text-stone-400 hover:text-#c5a059 transition-colors"><Mail size={20} /></a>
+            <a href="/#instagram" className="text-stone-400 hover:text-#c5a059 transition-colors"><Instagram size={20} /></a>
+            <a href="/#facebook" className="text-stone-400 hover:text-#c5a059 transition-colors"><Facebook size={20} /></a>
+            <a href="/#mail" className="text-stone-400 hover:text-#c5a059 transition-colors"><Mail size={20} /></a>
           </div>
         </div>
 

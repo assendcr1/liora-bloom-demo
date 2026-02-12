@@ -1,7 +1,7 @@
 // src/pages/Home.jsx
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Zap, Flower, ShieldCheck, Truck, Leaf, Sun, Heart } from "lucide-react";
+import { Flower, Truck, Leaf, Sun, Heart } from "lucide-react"; // Removed Zap and ShieldCheck
 import { useState } from "react";
 import { useProducts } from "../context/ProductContext";
 
