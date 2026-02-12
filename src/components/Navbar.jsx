@@ -1,5 +1,6 @@
+// src/components/Navbar.jsx
 import { Link, useNavigate } from "react-router-dom";
-import { Search, ShoppingBag, User, X, ShieldCheck, LogOut, Menu } from "lucide-react"; // Added Menu icon
+import { ShoppingBag, User, X, ShieldCheck, LogOut, Menu, Search } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -11,21 +12,16 @@ export default function Navbar() {
   const { cart, removeFromCart, cartOpen, setCartOpen } = useCart();
   const { user, isAdmin, logout } = useAuth();
   const [query, setQuery] = useState("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // New state for mobile menu
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSearch = (e) => {
     if (e.key === "Enter" && query.trim()) {
+      setIsMobileMenuOpen(false);
       navigate(`/collections?search=${query}`);
     }
   };
 
   const cartCount = cart?.length || 0;
-
-  // Helper to close menu and navigate
-  const closeAndNavigate = (path) => {
-    setIsMobileMenuOpen(false);
-    navigate(path);
-  };
 
   return (
     <>
@@ -35,10 +31,11 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
           
-          {/* MOBILE HAMBURGER - Left side on mobile */}
+          {/* MOBILE HAMBURGER */}
           <button 
             className="md:hidden text-stone-600 hover:text-black transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle Menu"
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -47,12 +44,12 @@ export default function Navbar() {
           <Link to="/" className="group flex items-center h-full absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
             <img 
               src="/logo.png" 
-              alt="Liora Bloom Logo" 
+              alt="Liora Blooms" 
               className="h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-105" 
             />
           </Link>
 
-          {/* MENU (Desktop) */}
+          {/* DESKTOP MENU */}
           <ul className="hidden md:flex items-center gap-10 text-[11px] font-bold uppercase tracking-widest text-stone-600">
             <li className="hover:text-black transition-colors"><Link to="/">Home</Link></li>
             <li className="hover:text-black transition-colors"><Link to="/collections">Collections</Link></li>
@@ -92,18 +89,18 @@ export default function Navbar() {
                       Hi, {user.name?.split(" ")[0]}
                     </span>
                   </button>
-                  <button onClick={logout} className="text-stone-300 hover:text-[#c5a059] transition-colors">
+                  <button onClick={logout} className="text-stone-300 hover:text-[#c5a059] transition-colors" aria-label="Logout">
                     <LogOut size={16} />
                   </button>
                 </div>
               ) : (
-                <button onClick={() => navigate("/login")} className="hover:text-[#c5a059] transition-colors">
+                <button onClick={() => navigate("/login")} className="hover:text-[#c5a059] transition-colors" aria-label="Login">
                   <User size={18} />
                 </button>
               )}
             </div>
 
-            <button onClick={() => setCartOpen(true)} className="relative hover:text-[#c5a059] transition-colors">
+            <button onClick={() => setCartOpen(true)} className="relative hover:text-[#c5a059] transition-colors" aria-label="Open Cart">
               <ShoppingBag size={18} />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-[#c5a059] text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full animate-pulse">
@@ -114,24 +111,24 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* MOBILE MENU DROPDOWN - Hidden on desktop */}
+        {/* MOBILE MENU DROPDOWN */}
         <div className={`md:hidden absolute top-full left-0 w-full bg-white border-b border-stone-100 shadow-xl transition-all duration-300 overflow-hidden ${isMobileMenuOpen ? 'max-h-screen py-8' : 'max-h-0'}`}>
            <ul className="flex flex-col items-center gap-6 text-[11px] font-bold uppercase tracking-[0.2em] text-stone-600">
-              <li onClick={() => setIsMobileMenuOpen(false)}><Link to="/">Home</Link></li>
-              <li onClick={() => setIsMobileMenuOpen(false)}><Link to="/collections">Collections</Link></li>
-              <li onClick={() => setIsMobileMenuOpen(false)}><Link to="/bloom-finder">Bloom Finder</Link></li>
-              <li onClick={() => setIsMobileMenuOpen(false)}><Link to="/our-story">Our Story</Link></li>
-              <li onClick={() => setIsMobileMenuOpen(false)}><Link to="/contact">Contact</Link></li>
+              <li><Link to="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link></li>
+              <li><Link to="/collections" onClick={() => setIsMobileMenuOpen(false)}>Collections</Link></li>
+              <li><Link to="/bloom-finder" onClick={() => setIsMobileMenuOpen(false)}>Bloom Finder</Link></li>
+              <li><Link to="/our-story" onClick={() => setIsMobileMenuOpen(false)}>Our Story</Link></li>
+              <li><Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link></li>
               {isAdmin && (
-                <li onClick={() => setIsMobileMenuOpen(false)} className="text-[#c5a059]">
-                  <Link to="/admin">Admin Dashboard</Link>
+                <li className="text-[#c5a059]">
+                  <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>Admin Dashboard</Link>
                 </li>
               )}
            </ul>
         </div>
       </nav>
 
-      {/* CART SIDEBAR - Keeping your original logic */}
+      {/* CART SIDEBAR */}
       {cartOpen && (
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div className="absolute inset-0 bg-stone-900/20 backdrop-blur-sm" onClick={() => setCartOpen(false)} />
