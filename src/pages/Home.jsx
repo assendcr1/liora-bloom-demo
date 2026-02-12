@@ -64,7 +64,7 @@ export default function Home() {
       {/* SECTION 2: PHILOSOPHY + BLOOM FINDER BRIDGE */}
       <section className="relative pt-40 pb-24 px-6 bg-[#faf9f6] overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-#c5a059100/40 blur-3xl" />
+          <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-#c5a059 blur-3xl" />
           <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-stone-200/60 blur-3xl" />
         </div>
 
@@ -155,7 +155,7 @@ export default function Home() {
       <section className="px-6 py-24 bg-white border-y border-stone-50">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
           <div>
-            <Heart className="mx-auto mb-6 text-#c5a059400" size={40} strokeWidth={1} />
+            <Heart className="mx-auto mb-6 text-#c5a059" size={40} strokeWidth={1} />
             <h4 className="text-xs font-black uppercase tracking-widest mb-2">
               Intentional Care
             </h4>
@@ -164,7 +164,7 @@ export default function Home() {
             </p>
           </div>
           <div>
-            <Truck className="mx-auto mb-6 text-#c5a059400" size={40} strokeWidth={1} />
+            <Truck className="mx-auto mb-6 text-#c5a059" size={40} strokeWidth={1} />
             <h4 className="text-xs font-black uppercase tracking-widest mb-2">
               Local Delivery
             </h4>
@@ -173,7 +173,7 @@ export default function Home() {
             </p>
           </div>
           <div>
-            <Leaf className="mx-auto mb-6 text-#c5a059400" size={40} strokeWidth={1} />
+            <Leaf className="mx-auto mb-6 text-#c5a059" size={40} strokeWidth={1} />
             <h4 className="text-xs font-black uppercase tracking-widest mb-2">
               Sustainably Sourced
             </h4>
@@ -189,7 +189,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
           <div>
             <h2 className="text-5xl md:text-7xl font-light mb-10 tracking-tighter">
-              Bloom <span className="italic font-serif text-#c5a059300">Finder</span>
+              Bloom <span className="italic font-serif text-#c5a059">Finder</span>
             </h2>
 
             <p className="text-stone-400 text-lg mb-10 font-light leading-relaxed">
@@ -197,7 +197,7 @@ export default function Home() {
             </p>
 
             <textarea
-              className="w-full bg-white/5 border border-white/10 p-6 rounded-[2rem] text-white h-40 mb-8 outline-none focus:border-#c5a059400 transition"
+              className="w-full bg-white/5 border border-white/10 p-6 rounded-[2rem] text-white h-40 mb-8 outline-none focus:border-#c5a059 transition"
               placeholder="Tell us about the person or moment you are celebrating..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
@@ -205,7 +205,7 @@ export default function Home() {
 
             <Link
               to="/bloom-finder"
-              className="inline-block bg-white text-stone-900 px-14 py-5 rounded-full font-black text-[11px] uppercase tracking-[0.2em] hover:bg-#c5a059100 transition"
+              className="inline-block bg-white text-stone-900 px-14 py-5 rounded-full font-black text-[11px] uppercase tracking-[0.2em] hover:bg-#c5a059 transition"
             >
               Continue to Bloom Finder
             </Link>

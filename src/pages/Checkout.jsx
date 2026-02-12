@@ -85,41 +85,41 @@ export default function Checkout() {
             <div className="grid grid-cols-2 gap-6">
               <input 
                 placeholder="Full Name" 
-                className="col-span-2 border-b py-3 outline-none focus:border-#c5a059400"
+                className="col-span-2 border-b py-3 outline-none focus:border-#c5a059"
                 onChange={(e) => setFormData({...formData, fullName: e.target.value})}
               />
               <input 
                 placeholder="Email Address" 
                 value={formData.email}
-                className="border-b py-3 outline-none focus:border-#c5a059400"
+                className="border-b py-3 outline-none focus:border-#c5a059"
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
               />
               <input 
                 placeholder="Phone Number" 
-                className="border-b py-3 outline-none focus:border-#c5a059400"
+                className="border-b py-3 outline-none focus:border-#c5a059"
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
               />
               <div className="col-span-2">
                 <label className="text-[10px] uppercase text-stone-400 block mb-1">Preferred Delivery Date</label>
                 <input 
                   type="date" 
-                  className="w-full border-b py-3 outline-none focus:border-#c5a059400"
+                  className="w-full border-b py-3 outline-none focus:border-#c5a059"
                   onChange={(e) => setFormData({...formData, deliveryDate: e.target.value})}
                 />
               </div>
               <input 
                 placeholder="Street Address" 
-                className="col-span-2 border-b py-3 outline-none focus:border-#c5a059400"
+                className="col-span-2 border-b py-3 outline-none focus:border-#c5a059"
                 onChange={(e) => setFormData({...formData, address: e.target.value})}
               />
               <input 
                 placeholder="Suburb" 
-                className="border-b py-3 outline-none focus:border-#c5a059400"
+                className="border-b py-3 outline-none focus:border-#c5a059"
                 onChange={(e) => setFormData({...formData, suburb: e.target.value})}
               />
               <input 
                 placeholder="Postal Code" 
-                className="border-b py-3 outline-none focus:border-#c5a059400"
+                className="border-b py-3 outline-none focus:border-#c5a059"
                 onChange={(e) => setFormData({...formData, postalCode: e.target.value})}
               />
             </div>
@@ -184,7 +184,7 @@ export default function Checkout() {
             <button 
               onClick={handleCompleteOrder}
               disabled={loading || cart.length === 0}
-              className="w-full bg-stone-900 text-white py-6 rounded-full text-xs uppercase tracking-[0.2em] font-black hover:bg-#c5a059400 transition-all flex justify-center items-center gap-2 shadow-xl"
+              className="w-full bg-stone-900 text-white py-6 rounded-full text-xs uppercase tracking-[0.2em] font-black hover:bg-#c5a059 transition-all flex justify-center items-center gap-2 shadow-xl"
             >
               {loading ? <Loader2 className="animate-spin" size={18} /> : "Complete Order"}
             </button>

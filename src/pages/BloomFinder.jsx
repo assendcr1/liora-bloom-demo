@@ -6,7 +6,7 @@ export default function BloomFinder() {
     <section className="min-h-screen pt-32 px-6 md:px-12 bg-[#faf9f6]">
       <div className="max-w-4xl mx-auto text-center">
         
-        <Sparkles className="mx-auto mb-8 text-#c5a059400" size={40} />
+        <Sparkles className="mx-auto mb-8 text-#c5a059" size={40} />
 
         <h1 className="text-6xl font-light italic font-serif mb-8">
           Bloom Finder

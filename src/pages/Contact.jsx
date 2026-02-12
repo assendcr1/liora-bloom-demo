@@ -29,7 +29,7 @@ export default function Contact() {
 
         {/* content */}
         <div className="relative z-10 text-center px-6 max-w-4xl">
-          <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-#c5a059300 mb-6">
+          <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-#c5a059 mb-6">
             Get in Touch
           </p>
           <h1 className="text-6xl md:text-7xl font-light tracking-tight mb-6">
@@ -47,7 +47,7 @@ export default function Contact() {
       <section className="px-6 md:px-12 py-32 max-w-7xl mx-auto">
         <div className="grid md:grid-cols-3 gap-16 text-center mb-32">
           <div>
-            <Mail className="mx-auto mb-6 text-#c5a059400" size={36} />
+            <Mail className="mx-auto mb-6 text-#c5a059" size={36} />
             <p className="text-xs font-black uppercase tracking-widest mb-2">
               Email Us
             </p>
@@ -57,7 +57,7 @@ export default function Contact() {
           </div>
 
           <div>
-            <Phone className="mx-auto mb-6 text-#c5a059400" size={36} />
+            <Phone className="mx-auto mb-6 text-#c5a059" size={36} />
             <p className="text-xs font-black uppercase tracking-widest mb-2">
               Call Us
             </p>
@@ -67,7 +67,7 @@ export default function Contact() {
           </div>
 
           <div>
-            <MapPin className="mx-auto mb-6 text-#c5a059400" size={36} />
+            <MapPin className="mx-auto mb-6 text-#c5a059" size={36} />
             <p className="text-xs font-black uppercase tracking-widest mb-2">
               Studio Location
             </p>
@@ -94,7 +94,7 @@ export default function Contact() {
             </p>
 
             <div className="flex items-center gap-4 text-stone-500 text-sm">
-              <Sparkles size={18} className="text-#c5a059400" />
+              <Sparkles size={18} className="text-#c5a059" />
               Responses typically within the same business day
             </div>
 

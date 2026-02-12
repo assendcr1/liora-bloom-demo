@@ -91,7 +91,7 @@ export default function Cart() {
 
               <button 
                 onClick={handleProceedToCheckout}
-                className="w-full py-6 bg-stone-900 text-white rounded-full text-xs uppercase tracking-[0.3em] font-black hover:bg-#c5a059400 transition-all flex items-center justify-center gap-3 shadow-xl shadow-stone-200"
+                className="w-full py-6 bg-stone-900 text-white rounded-full text-xs uppercase tracking-[0.3em] font-black hover:bg-#c5a059 transition-all flex items-center justify-center gap-3 shadow-xl shadow-stone-200"
               >
                 Proceed to Checkout <ArrowRight size={16} />
               </button>
@@ -111,7 +111,7 @@ export default function Cart() {
             <ShoppingCart className="text-stone-200" size={32} />
           </div>
           <p className="text-stone-400 font-serif italic text-2xl mb-8">Your flower box is currently empty</p>
-          <Link to="/collections" className="inline-block bg-stone-900 text-white px-12 py-5 rounded-full text-xs uppercase tracking-widest font-black hover:bg-#c5a059400 transition-all">
+          <Link to="/collections" className="inline-block bg-stone-900 text-white px-12 py-5 rounded-full text-xs uppercase tracking-widest font-black hover:bg-#c5a059 transition-all">
             Shop Collections
           </Link>
         </div>
@@ -128,7 +128,7 @@ export default function Cart() {
               <X size={20} />
             </button>
 
-            <div className="w-16 h-16 bg-#c5a05950 text-#c5a059400 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-16 h-16 bg-#c5a059 text-#c5a059 rounded-full flex items-center justify-center mx-auto mb-6">
               <ShoppingCart size={24} />
             </div>
 
@@ -140,7 +140,7 @@ export default function Cart() {
             <div className="space-y-4">
               <button 
                 onClick={() => navigate("/signup")} 
-                className="w-full bg-stone-900 text-white py-5 rounded-full text-xs uppercase font-black tracking-widest hover:bg-#c5a059400 transition-all"
+                className="w-full bg-stone-900 text-white py-5 rounded-full text-xs uppercase font-black tracking-widest hover:bg-#c5a059 transition-all"
               >
                 Create Account / Login
               </button>

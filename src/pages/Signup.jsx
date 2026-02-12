@@ -34,7 +34,7 @@ export default function Signup() {
     <section className="min-h-screen pt-32 pb-24 flex items-center justify-center bg-[#faf9f6] px-6">
       <div className="bg-white rounded-[3rem] shadow-2xl p-14 max-w-md w-full">
         <div className="text-center mb-10">
-          <Link to="/" className="font-serif italic text-3xl inline-block mb-6 hover:text-#c5a059400 transition-colors">
+          <Link to="/" className="font-serif italic text-3xl inline-block mb-6 hover:text-#c5a059 transition-colors">
             Liora Bloom
           </Link>
           <h2 className="text-4xl font-light italic font-serif">
@@ -87,7 +87,7 @@ export default function Signup() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-stone-900 text-white py-5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-#c5a059400 transition-all disabled:opacity-50"
+            className="w-full bg-stone-900 text-white py-5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-#c5a059 transition-all disabled:opacity-50"
           >
             {loading ? "Processing..." : "Create Account"}
           </button>
