@@ -1,12 +1,7 @@
 // src/pages/OurStory.jsx
 import {
-  Flower,
-  Leaf,
   ShieldCheck,
-  HeartHandshake,
   Sparkles,
-  Truck,
-  Quote,
   Sun,
   HandHeart,
 } from "lucide-react";
@@ -86,7 +81,7 @@ export default function OurStory() {
         </div>
       </section>
 
-      {/* VALUES - UPDATED WITH LIORA SPECIFICS */}
+      {/* VALUES */}
       <section className="px-6 md:px-12 py-36 max-w-7xl mx-auto">
         <h2 className="text-5xl font-light italic font-serif text-center mb-24">
           Guided by Light

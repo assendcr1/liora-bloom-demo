@@ -78,7 +78,7 @@ export default function ProductDetail() {
           <div className="relative aspect-[3/4] rounded-[3rem] overflow-hidden bg-stone-100 mb-6">
             <img
               src={product.images?.[activeImage]}
-              alt={product.name}
+              alt={product.name || "Main bouquet image"}
               className="w-full h-full object-cover"
             />
 
@@ -120,7 +120,7 @@ export default function ProductDetail() {
                     : "border-stone-200"
                 }`}
               >
-                <img src={img} className="w-full h-full object-cover" />
+                <img src={img} alt={`${product.name} view ${index + 1}`} className="w-full h-full object-cover" />
               </button>
             ))}
           </div>
@@ -274,6 +274,7 @@ export default function ProductDetail() {
                 <div className="aspect-[3/4] rounded-2xl overflow-hidden mb-4 bg-stone-100">
                   <img
                     src={item.images?.[0]}
+                    alt={item.name || "Similar product image"}
                     className="w-full h-full object-cover group-hover:scale-110 transition"
                   />
                 </div>
