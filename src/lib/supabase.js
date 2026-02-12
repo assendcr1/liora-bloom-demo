@@ -1,13 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Detection logic for both Create React App and Vite
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || import.meta.env?.VITE_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || import.meta.env?.VITE_SUPABASE_ANON_KEY;
 
-// This will help us debug once the page loads
-console.log("--- Supabase Connection Diagnostic ---");
-console.log("URL:", supabaseUrl ? "✅ Loaded" : "❌ MISSING");
-console.log("Key:", supabaseAnonKey ? "✅ Loaded" : "❌ MISSING");
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn("⚠️ Database credentials not found. Check your .env file.");
+}
 
-export const supabase = (supabaseUrl && supabaseAnonKey) 
-  ? createClient(supabaseUrl, supabaseAnonKey) 
-  : null;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

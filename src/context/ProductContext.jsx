@@ -1,8 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-const ProductContext = createContext(null);
-export const useProducts = () => useContext(ProductContext);
+const ProductContext = createContext();
 
 export function ProductProvider({ children }) {
   const [products, setProducts] = useState([]);
@@ -10,41 +9,32 @@ export function ProductProvider({ children }) {
 
   const fetchProducts = async () => {
     try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("products").select("*").order("created_at", { ascending: false });
       if (error) throw error;
       setProducts(data || []);
     } catch (err) {
-      console.error("🚨 Fetch Error:", err.message);
+      console.error("Fetch error:", err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const addProduct = async (payload) => {
-    const { id, created_at, ...newProduct } = payload;
-    const { data, error } = await supabase.from("products").insert([newProduct]).select();
+  const addProduct = async (product) => {
+    const { data, error } = await supabase.from("products").insert([product]).select();
     if (error) throw error;
-    setProducts((prev) => [data[0], ...prev]);
-    return data[0];
+    setProducts([data[0], ...products]);
   };
 
-  const updateProduct = async (id, payload) => {
-    const { id: _, created_at, ...updates } = payload;
+  const updateProduct = async (id, updates) => {
     const { data, error } = await supabase.from("products").update(updates).eq("id", id).select();
     if (error) throw error;
-    setProducts((prev) => prev.map((p) => (p.id === id ? data[0] : p)));
-    return data[0];
+    setProducts(products.map(p => p.id === id ? data[0] : p));
   };
 
   const deleteProduct = async (id) => {
-    if (!window.confirm("Delete permanently?")) return;
     const { error } = await supabase.from("products").delete().eq("id", id);
     if (error) throw error;
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+    setProducts(products.filter(p => p.id !== id));
   };
 
   useEffect(() => { fetchProducts(); }, []);
@@ -55,3 +45,5 @@ export function ProductProvider({ children }) {
     </ProductContext.Provider>
   );
 }
+
+export const useProducts = () => useContext(ProductContext);
