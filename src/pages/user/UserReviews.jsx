@@ -7,12 +7,10 @@ import { Star, Trash2 } from "lucide-react";
 export default function UserReviews() {
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const fetchMyReviews = async () => {
     if (!user) return;
     try {
-      setLoading(true);
       // We join with 'products' to show the name of the item reviewed
       const { data, error } = await supabase
         .from("Reviews")
@@ -29,13 +27,12 @@ export default function UserReviews() {
       setReviews(data || []);
     } catch (err) {
       console.error("Error fetching reviews:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchMyReviews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const deleteReview = async (id) => {

@@ -72,7 +72,13 @@ export default function AdminProducts() {
                 <td className="p-8">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-stone-100 rounded-lg overflow-hidden shrink-0">
-                      {p.gallery?.[0] && <img src={p.gallery[0]} className="w-full h-full object-cover"/>}
+                      {p.gallery?.[0] && (
+                        <img 
+                          src={p.gallery[0]} 
+                          alt={p.name} 
+                          className="w-full h-full object-cover"
+                        />
+                      )}
                     </div>
                     <span className="font-bold text-stone-900 uppercase tracking-tight">{p.name}</span>
                   </div>
