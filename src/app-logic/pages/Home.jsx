@@ -22,7 +22,7 @@ export default function Home() {
           <img
             src="https://images.pexels.com/photos/11166470/pexels-photo-11166470.jpeg"
             className="w-full h-full object-cover"
-            alt="Liora Bloom Background"
+            alt="Liora Blooms Background"
           />
           <div className="absolute inset-0 bg-black/20" />
         </div>
@@ -36,7 +36,7 @@ export default function Home() {
             Lighting the world, one bouquet at a time
           </p>
           <h1 className="text-7xl md:text-9xl font-light tracking-tighter mb-6 text-white">
-            Liora <span className="italic font-serif">Bloom</span>
+            Liora <span className="italic font-serif">Blooms</span>
           </h1>
 
           <p className="max-w-xl mx-auto text-lg text-white mb-12 font-light">

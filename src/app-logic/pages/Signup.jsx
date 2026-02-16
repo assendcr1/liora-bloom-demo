@@ -35,7 +35,7 @@ export default function Signup() {
       <div className="bg-white rounded-[3rem] shadow-2xl p-14 max-w-md w-full">
         <div className="text-center mb-10">
           <Link to="/" className="font-serif italic text-3xl inline-block mb-6 hover:text-#c5a059 transition-colors">
-            Liora Bloom
+            Liora Blooms
           </Link>
           <h2 className="text-4xl font-light italic font-serif">
             Create Account

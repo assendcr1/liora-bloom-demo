@@ -1,4 +1,3 @@
-// src/pages/admin/Products.jsx
 import { useState } from "react";
 import { Plus, Edit, Trash2, X, Upload, Loader2 } from "lucide-react";
 import { useProducts } from "../../context/ProductContext";
@@ -10,27 +9,36 @@ export default function AdminProducts() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Helper to handle File Upload to Supabase Storage
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || isUploading) return;
 
     try {
       setIsUploading(true);
       
+      // 1. Create a truly unique file path using timestamp and random string
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}-${Date.now()}.${fileExt}`;
+      const uniqueID = Math.random().toString(36).substring(7);
+      const fileName = `${Date.now()}-${uniqueID}.${fileExt}`;
       const filePath = `bouquets/${fileName}`;
 
+      // 2. Upload the file to the 'product-images' bucket
       const { error: uploadError } = await supabase.storage
         .from('product-images')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+        });
 
       if (uploadError) throw uploadError;
 
+      // 3. Get the Public URL
       const { data } = supabase.storage
         .from('product-images')
         .getPublicUrl(filePath);
 
+      // 4. Update the editing state with the new URL
       setEditing(prev => ({
         ...prev,
         gallery: [data.publicUrl]
@@ -39,9 +47,13 @@ export default function AdminProducts() {
     } catch (err) {
       console.error("Upload error:", err);
       alert("Failed to upload image: " + err.message);
+      setIsUploading(false); // Immediate unlock on error
     } finally {
-      // Small delay ensures state is fully committed before unlocking button
-      setTimeout(() => setIsUploading(false), 300);
+      // 5. THE COOLDOWN: Wait 1 second before unlocking the button.
+      // This prevents the Codespace CLI from locking the 2nd upload attempt.
+      setTimeout(() => {
+        setIsUploading(false);
+      }, 1000);
     }
   };
 
@@ -70,6 +82,8 @@ export default function AdminProducts() {
     } catch (err) {
       console.error("Save failed:", err);
       alert("Error: " + err.message);
+      // Ensure we unlock on failure
+      setIsSaving(false);
     } finally {
       setIsSaving(false);
     }
@@ -107,7 +121,7 @@ export default function AdminProducts() {
               <tr key={p.id} className="hover:bg-stone-50/30 transition-colors">
                 <td className="p-8">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-stone-100 rounded-lg overflow-hidden shrink-0">
+                    <div className="w-12 h-12 bg-stone-100 rounded-lg overflow-hidden shrink-0 border border-stone-50">
                       {p.gallery?.[0] && (
                         <img 
                           src={p.gallery[0]} 
@@ -136,7 +150,7 @@ export default function AdminProducts() {
           <div className="bg-white rounded-[3rem] w-full max-w-2xl shadow-2xl overflow-hidden">
             <div className="p-10 border-b flex justify-between items-center">
               <h2 className="text-3xl font-serif italic">{editing.id ? "Edit Bouquet" : "New Bouquet"}</h2>
-              <button onClick={() => setEditing(null)} className="p-2 hover:bg-stone-100 rounded-full"><X size={24}/></button>
+              <button onClick={() => setEditing(null)} className="p-2 hover:bg-stone-100 rounded-full transition-colors"><X size={24}/></button>
             </div>
             
             <div className="p-10 space-y-8">
@@ -160,10 +174,16 @@ export default function AdminProducts() {
                 </div>
                 
                 <label className="mt-4 cursor-pointer">
-                  <span className="text-[10px] font-black uppercase tracking-widest bg-stone-100 px-4 py-2 rounded-full hover:bg-stone-200 transition-colors">
+                  <span className={`text-[10px] font-black uppercase tracking-widest px-6 py-2 rounded-full transition-all ${isUploading ? 'bg-stone-200 text-stone-400' : 'bg-stone-100 hover:bg-stone-200'}`}>
                     {isUploading ? "Uploading..." : editing.gallery?.[0] ? "Change Photo" : "Upload Photo"}
                   </span>
-                  <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={isUploading || isSaving} />
+                  <input 
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*" 
+                    onChange={handleFileUpload} 
+                    disabled={isUploading || isSaving} 
+                  />
                 </label>
               </div>
 
@@ -172,7 +192,7 @@ export default function AdminProducts() {
                   placeholder="Bouquet Name" 
                   value={editing.name} 
                   onChange={e => setEditing({...editing, name: e.target.value})} 
-                  className="w-full border-b py-3 outline-none text-xl font-serif italic" 
+                  className="w-full border-b py-3 outline-none text-xl font-serif italic focus:border-stone-900 transition-colors" 
                 />
                 <div className="grid grid-cols-2 gap-6">
                   <input 
@@ -180,19 +200,19 @@ export default function AdminProducts() {
                     type="number" 
                     value={editing.price} 
                     onChange={e => setEditing({...editing, price: e.target.value})} 
-                    className="border-b py-3 outline-none" 
+                    className="border-b py-3 outline-none focus:border-stone-900 transition-colors" 
                   />
                   <input 
                     placeholder="Category" 
                     value={editing.category} 
                     onChange={e => setEditing({...editing, category: e.target.value})} 
-                    className="border-b py-3 outline-none" 
+                    className="border-b py-3 outline-none focus:border-stone-900 transition-colors" 
                   />
                 </div>
               </div>
             </div>
 
-            <div className="p-10 border-t bg-stone-50/50 flex justify-end gap-6">
+            <div className="p-10 border-t bg-stone-50/50 flex justify-end gap-6 items-center">
               <button 
                 onClick={() => setEditing(null)} 
                 className="text-[10px] uppercase font-black tracking-widest text-stone-400 hover:text-stone-600 transition-colors"
@@ -203,7 +223,7 @@ export default function AdminProducts() {
                 onClick={handleSave} 
                 disabled={isSaving || isUploading} 
                 className={`bg-stone-900 text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
-                  (isSaving || isUploading) ? "opacity-50 cursor-not-allowed" : "hover:bg-[#c5a059]"
+                  (isSaving || isUploading) ? "opacity-50 cursor-not-allowed" : "hover:bg-[#c5a059] shadow-lg active:scale-95"
                 }`}
               >
                 {isSaving ? "Syncing..." : isUploading ? "Finalizing Image..." : "Save Bouquet"}

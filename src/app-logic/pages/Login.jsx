@@ -64,7 +64,7 @@ export default function Login() {
           to="/"
           className="font-serif italic text-3xl inline-block mb-6 hover:text-[#c5a059] transition-colors"
         >
-          Liora Bloom
+          Liora Blooms
         </Link>
 
         <h2 className="text-4xl font-light italic font-serif mb-10 text-stone-900">
