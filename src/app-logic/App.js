@@ -1,7 +1,8 @@
-// src/App.js
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// src/app-logic/App.js
+import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar, { NAVBAR_HEIGHT } from "./components/Navbar";
-import Footer from "./components/Footer"; // 1. IMPORT THE FOOTER
+import Footer from "./components/Footer";
 
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
@@ -19,6 +20,8 @@ import OurStory from "./pages/OurStory";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 
 /* ADMIN */
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -36,6 +39,14 @@ import UserProfile from "./pages/user/UserProfile";
 import UserOrders from "./pages/user/UserOrders";
 import UserReviews from "./pages/user/UserReviews";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 export default function App() {
   return (
     <AuthProvider>
@@ -43,12 +54,11 @@ export default function App() {
         <ProductProvider>
           <OrderProvider>
             <Router>
+              <ScrollToTop />
               <Navbar />
               
-              {/* This wrapper ensures content starts below the fixed Navbar */}
               <div style={{ paddingTop: NAVBAR_HEIGHT, minHeight: '100vh' }}>
                 <Routes>
-                  {/* PUBLIC */}
                   <Route path="/" element={<Home />} />
                   <Route path="/collections" element={<Collections />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
@@ -57,30 +67,16 @@ export default function App() {
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/checkout" element={<Checkout />} />
 
-                  {/* USER DASHBOARD */}
-                  <Route
-                    path="/account"
-                    element={
-                      <PrivateRoute>
-                        <UserLayout />
-                      </PrivateRoute>
-                    }
-                  >
+                  <Route path="/account" element={<PrivateRoute><UserLayout /></PrivateRoute>}>
                     <Route index element={<UserProfile />} />
                     <Route path="orders" element={<UserOrders />} />
                     <Route path="reviews" element={<UserReviews />} />
                   </Route>
 
-                  {/* ADMIN */}
-                  <Route
-                    path="/admin"
-                    element={
-                      <AdminRoute>
-                        <AdminLayout />
-                      </AdminRoute>
-                    }
-                  >
+                  <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
                     <Route index element={<AdminDashboard />} />
                     <Route path="products" element={<AdminProducts />} />
                     <Route path="orders" element={<AdminOrders />} />
@@ -91,9 +87,7 @@ export default function App() {
                   </Route>
                 </Routes>
               </div>
-
-              <Footer /> {/* 2. RENDER THE FOOTER HERE */}
-              
+              <Footer />
             </Router>
           </OrderProvider>
         </ProductProvider>

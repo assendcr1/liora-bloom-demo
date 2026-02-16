@@ -11,11 +11,12 @@ export default function Cart() {
   const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // Handle the logic for the "Proceed" button
   const handleProceedToCheckout = () => {
+    // If user is not logged in, show the modal with Login/Guest options
     if (!user) {
       setShowAuthModal(true);
     } else {
+      // If logged in, go straight to checkout
       navigate("/checkout");
     }
   };
@@ -35,30 +36,39 @@ export default function Cart() {
           
           {/* List of Items */}
           <div className="lg:col-span-7 space-y-8">
-            {cart.map((item, index) => (
-              <div key={`${item.id}-${index}`} className="flex gap-6 pb-8 border-b border-stone-100">
+            {cart.map((item) => (
+              <div key={item.cartItemId} className="flex gap-6 pb-8 border-b border-stone-100">
                 <div className="w-24 h-32 rounded-2xl overflow-hidden bg-stone-50">
-                  <img src={item.images?.[0]} className="w-full h-full object-cover" alt={item.name} />
+                  <img 
+                    src={item.gallery?.[0] || item.image || item.images?.[0]} 
+                    className="w-full h-full object-cover" 
+                    alt={item.name} 
+                  />
                 </div>
                 <div className="flex-1 flex flex-col justify-between py-1">
                   <div>
                     <h3 className="text-xl font-serif italic">{item.name}</h3>
                     <p className="text-xs text-stone-400 uppercase tracking-widest mt-1">{item.category}</p>
+                    
+                    {/* Display Addons */}
+                    {item.selectedAddons?.length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {item.selectedAddons.map((addon, i) => (
+                          <p key={i} className="text-[10px] text-stone-400 italic">
+                            + {addon.name} (R {Number(addon.price).toFixed(2)})
+                          </p>
+                        ))}
+                      </div>
+                    )}
                   </div>
+
                   <div className="flex justify-between items-end">
-                    <div className="space-y-1">
-                      {item.sale_price ? (
-                        <div className="flex gap-3 items-center">
-                          <p className="font-bold text-#c5a059">R {Number(item.sale_price).toFixed(2)}</p>
-                          <p className="text-stone-300 line-through text-xs">R {Number(item.price).toFixed(2)}</p>
-                        </div>
-                      ) : (
-                        <p className="font-bold text-stone-900">R {Number(item.price).toFixed(2)}</p>
-                      )}
-                    </div>
+                    <p className="font-bold text-stone-900">
+                      R {Number(item.itemTotal).toFixed(2)}
+                    </p>
                     <button 
-                      onClick={() => removeFromCart(item.id)}
-                      className="text-stone-300 hover:text-#c5a059 transition-colors p-2"
+                      onClick={() => removeFromCart(item.cartItemId)}
+                      className="text-stone-300 hover:text-red-500 transition-colors p-2"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -68,7 +78,7 @@ export default function Cart() {
             ))}
           </div>
 
-          {/* Checkout Summary Sidebar */}
+          {/* Summary Sidebar */}
           <div className="lg:col-span-5">
             <div className="bg-stone-50 p-10 rounded-[3rem] sticky top-32">
               <h2 className="text-sm uppercase tracking-[0.2em] font-bold text-stone-400 mb-8">Order Summary</h2>
@@ -91,63 +101,63 @@ export default function Cart() {
 
               <button 
                 onClick={handleProceedToCheckout}
-                className="w-full py-6 bg-stone-900 text-white rounded-full text-xs uppercase tracking-[0.3em] font-black hover:bg-#c5a059 transition-all flex items-center justify-center gap-3 shadow-xl shadow-stone-200"
+                className="w-full py-6 bg-stone-900 text-white rounded-full text-xs uppercase tracking-[0.3em] font-black hover:bg-[#c5a059] transition-all flex items-center justify-center gap-3 shadow-xl shadow-stone-200"
               >
                 Proceed to Checkout <ArrowRight size={16} />
               </button>
-
-              <p className="text-center mt-6">
-                <Link to="/collections" className="text-[10px] uppercase font-bold tracking-widest text-stone-400 hover:text-stone-900 underline underline-offset-8 transition-all">
-                  Continue Browsing
-                </Link>
-              </p>
             </div>
           </div>
         </div>
       ) : (
         /* Empty State */
         <div className="text-center py-32 bg-stone-50 rounded-[4rem] border border-dashed border-stone-200">
-          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
-            <ShoppingCart className="text-stone-200" size={32} />
-          </div>
           <p className="text-stone-400 font-serif italic text-2xl mb-8">Your flower box is currently empty</p>
-          <Link to="/collections" className="inline-block bg-stone-900 text-white px-12 py-5 rounded-full text-xs uppercase tracking-widest font-black hover:bg-#c5a059 transition-all">
+          <Link to="/collections" className="inline-block bg-stone-900 text-white px-12 py-5 rounded-full text-xs uppercase tracking-widest font-black hover:bg-[#c5a059] transition-all">
             Shop Collections
           </Link>
         </div>
       )}
 
-      {/* Auth Gateway Popup */}
+      {/* Auth Modal */}
       {showAuthModal && (
         <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white rounded-[3rem] p-12 max-w-md w-full text-center shadow-2xl relative animate-in zoom-in-95 duration-300">
+          <div className="bg-white rounded-[3rem] p-12 max-w-md w-full text-center relative shadow-2xl">
+            {/* Close Button */}
             <button 
               onClick={() => setShowAuthModal(false)}
-              className="absolute top-8 right-8 text-stone-300 hover:text-stone-900"
+              className="absolute top-8 right-8 text-stone-300 hover:text-stone-900 transition-colors"
             >
-              <X size={20} />
+              <X size={24} />
             </button>
 
-            <div className="w-16 h-16 bg-#c5a059 text-#c5a059 rounded-full flex items-center justify-center mx-auto mb-6">
-              <ShoppingCart size={24} />
+            <div className="mb-8 flex justify-center">
+              <div className="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center text-stone-900">
+                <ShoppingCart size={32} />
+              </div>
             </div>
 
-            <h2 className="text-3xl font-serif italic mb-4">Almost there...</h2>
+            <h2 className="text-3xl font-serif italic text-stone-900 mb-4">Almost there...</h2>
             <p className="text-stone-500 mb-8 text-sm leading-relaxed">
-              You need to create an account to place an order and track your delivery.
+              Sign in to save your order to your account, or proceed as a guest to complete your purchase.
             </p>
-            
+
             <div className="space-y-4">
               <button 
-                onClick={() => navigate("/signup")} 
-                className="w-full bg-stone-900 text-white py-5 rounded-full text-xs uppercase font-black tracking-widest hover:bg-#c5a059 transition-all"
+                onClick={() => navigate("/login")}
+                className="w-full py-5 bg-stone-900 text-white rounded-full text-xs uppercase tracking-[0.2em] font-black hover:bg-[#c5a059] transition-all shadow-lg"
               >
-                Create Account / Login
+                Login or Sign Up
               </button>
               
+              <div className="flex items-center gap-4 py-2">
+                <div className="h-px bg-stone-100 flex-1"></div>
+                <span className="text-[10px] uppercase tracking-widest text-stone-300 font-bold">OR</span>
+                <div className="h-px bg-stone-100 flex-1"></div>
+              </div>
+
               <button 
-                onClick={() => navigate("/checkout")} 
-                className="w-full py-4 text-stone-400 text-[10px] uppercase font-bold tracking-[0.2em] hover:text-stone-900 transition-colors"
+                onClick={() => navigate("/checkout")}
+                className="w-full py-4 text-stone-400 hover:text-stone-900 text-[10px] uppercase tracking-[0.2em] font-black transition-colors"
               >
                 Continue as Guest
               </button>
