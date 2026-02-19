@@ -52,7 +52,7 @@ export default function Contact() {
               Email Us
             </p>
             <p className="text-stone-500 text-sm">
-              hello@liorabloom.co.za
+              hello@liorablooms.co.za
             </p>
           </div>
 
@@ -62,7 +62,7 @@ export default function Contact() {
               Call Us
             </p>
             <p className="text-stone-500 text-sm">
-              +27 00 000 0000
+              +27 72 850 8907
             </p>
           </div>
 
@@ -100,7 +100,7 @@ export default function Contact() {
 
             <div className="mt-10">
               <a
-                href="https://wa.me/0000000000"
+                href="https://wa.me/0728508907"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-widest border-b border-black pb-1"
