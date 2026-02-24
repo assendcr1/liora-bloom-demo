@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Edit, Trash2, X, Upload, Loader2, Heart, ChevronDown } from "lucide-react";
+import { Plus, Edit, Trash2, X, Upload, Loader2, ChevronDown } from "lucide-react";
 import { useProducts } from "../../context/ProductContext";
 import { supabase } from "../../lib/supabase";
 
@@ -21,7 +21,7 @@ export default function AdminProducts() {
         const parsed = JSON.parse(val);
         return Array.isArray(parsed) ? parsed[0] : val;
       } catch (e) {
-        return val.replace(/[\[\]"]/g, '').replace(/^"|"$/g, ''); 
+        return val.replace(/[[\]"]/g, '').replace(/^"|"$/g, ''); 
       }
     }
     return val;

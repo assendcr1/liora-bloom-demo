@@ -31,7 +31,7 @@ export default function ProductDetail() {
         const parsed = JSON.parse(val);
         return Array.isArray(parsed) ? parsed[0] : val;
       } catch (e) {
-        return val.replace(/[\[\]"]/g, '').replace(/^"|"$/g, ''); 
+        return val.replace(/[[\]"]/g, '').replace(/^"|"$/g, ''); 
       }
     }
     return val;
@@ -40,7 +40,7 @@ export default function ProductDetail() {
   const ensureArray = (val) => {
     if (Array.isArray(val)) return val;
     if (typeof val === 'string' && val.startsWith('[')) {
-      try { return JSON.parse(val); } catch (e) { return [val.replace(/[\[\]"]/g, '')]; }
+      try { return JSON.parse(val); } catch (e) { return [val.replace(/[[\]"]/g, '')]; }
     }
     return val ? [val] : [];
   };
