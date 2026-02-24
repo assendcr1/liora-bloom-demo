@@ -1,11 +1,11 @@
-// src/components/Navbar.jsx
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingBag, User, X, ShieldCheck, LogOut, Menu, Search } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 
-export const NAVBAR_HEIGHT = 88;
+// Increased from 88 to 100 to accommodate the larger logo
+export const NAVBAR_HEIGHT = 100;
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -40,12 +40,12 @@ export default function Navbar() {
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          {/* LOGO */}
+          {/* LOGO - Increased sizes: h-14->h-18 (mobile) and h-16->h-24 (desktop) */}
           <Link to="/" className="group flex items-center h-full absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
             <img 
               src="/logo.png" 
               alt="Liora Blooms" 
-              className="h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-105" 
+              className="h-18 md:h-24 w-auto object-contain transition-transform group-hover:scale-105" 
             />
           </Link>
 
@@ -114,21 +114,21 @@ export default function Navbar() {
         {/* MOBILE MENU DROPDOWN */}
         <div className={`md:hidden absolute top-full left-0 w-full bg-white border-b border-stone-100 shadow-xl transition-all duration-300 overflow-hidden ${isMobileMenuOpen ? 'max-h-screen py-8' : 'max-h-0'}`}>
            <ul className="flex flex-col items-center gap-6 text-[11px] font-bold uppercase tracking-[0.2em] text-stone-600">
-              <li><Link to="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link></li>
-              <li><Link to="/collections" onClick={() => setIsMobileMenuOpen(false)}>Collections</Link></li>
-              <li><Link to="/bloom-finder" onClick={() => setIsMobileMenuOpen(false)}>Bloom Finder</Link></li>
-              <li><Link to="/our-story" onClick={() => setIsMobileMenuOpen(false)}>Our Story</Link></li>
-              <li><Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link></li>
-              {isAdmin && (
-                <li className="text-[#c5a059]">
-                  <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>Admin Dashboard</Link>
-                </li>
-              )}
+             <li><Link to="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link></li>
+             <li><Link to="/collections" onClick={() => setIsMobileMenuOpen(false)}>Collections</Link></li>
+             <li><Link to="/bloom-finder" onClick={() => setIsMobileMenuOpen(false)}>Bloom Finder</Link></li>
+             <li><Link to="/our-story" onClick={() => setIsMobileMenuOpen(false)}>Our Story</Link></li>
+             <li><Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link></li>
+             {isAdmin && (
+               <li className="text-[#c5a059]">
+                 <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>Admin Dashboard</Link>
+               </li>
+             )}
            </ul>
         </div>
       </nav>
 
-      {/* CART SIDEBAR */}
+      {/* CART SIDEBAR - Logic remains the same */}
       {cartOpen && (
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div className="absolute inset-0 bg-stone-900/20 backdrop-blur-sm" onClick={() => setCartOpen(false)} />
