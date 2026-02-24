@@ -22,6 +22,8 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 
 /* ADMIN */
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -69,6 +71,8 @@ export default function App() {
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<TermsOfService />} />
 
                   <Route path="/account" element={<PrivateRoute><UserLayout /></PrivateRoute>}>
                     <Route index element={<UserProfile />} />
