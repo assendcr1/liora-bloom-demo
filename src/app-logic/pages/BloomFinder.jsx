@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, Loader2, Flower2, RefreshCcw, ArrowRight } from "lucide-react";
+import { Sparkles, Loader2, RefreshCcw, } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase"; 
 
