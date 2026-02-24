@@ -7,7 +7,6 @@ export function ProductProvider({ children }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Wrapped in useCallback to prevent Vercel/Linting dependency errors
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
@@ -15,7 +14,6 @@ export function ProductProvider({ children }) {
         .from("products")
         .select("*")
         .order("created_at", { ascending: false });
-      
       if (error) throw error;
       setProducts(data || []);
     } catch (err) {
@@ -26,26 +24,27 @@ export function ProductProvider({ children }) {
   }, []);
 
   const addProduct = async (product) => {
-    const { data, error } = await supabase.from("products").insert([product]).select();
-    if (error) throw error;
-    if (data) setProducts([data[0], ...products]);
+    const result = await supabase.from("products").insert([product]).select();
+    if (result.error) throw result.error;
+    if (result.data) setProducts([result.data[0], ...products]);
+    return result; 
   };
 
   const updateProduct = async (id, updates) => {
-    const { data, error } = await supabase.from("products").update(updates).eq("id", id).select();
-    if (error) throw error;
-    if (data) setProducts(products.map(p => p.id === id ? data[0] : p));
+    const result = await supabase.from("products").update(updates).eq("id", id).select();
+    if (result.error) throw result.error;
+    if (result.data) setProducts(products.map(p => p.id === id ? result.data[0] : p));
+    return result;
   };
 
   const deleteProduct = async (id) => {
-    const { error } = await supabase.from("products").delete().eq("id", id);
-    if (error) throw error;
+    const result = await supabase.from("products").delete().eq("id", id);
+    if (result.error) throw result.error;
     setProducts(products.filter(p => p.id !== id));
+    return result;
   };
 
-  useEffect(() => { 
-    fetchProducts(); 
-  }, [fetchProducts]); // fetchProducts is now a stable dependency
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
   return (
     <ProductContext.Provider value={{ products, loading, addProduct, updateProduct, deleteProduct, fetchProducts }}>

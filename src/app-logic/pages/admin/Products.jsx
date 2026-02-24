@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { Plus, Edit, Trash2, X, Upload, Loader2 } from "lucide-react";
+import { Plus, Edit, Trash2, X, Upload, Loader2, Heart, ChevronDown } from "lucide-react";
 import { useProducts } from "../../context/ProductContext";
 import { supabase } from "../../lib/supabase";
+
+const CATEGORIES = ["Assorted Roses", "Red Roses", "Personalised", "Funeral Packages", "Luxury Boxes", "Bouquets"];
+const OCCASIONS = ["Funeral", "Anniversary", "Birthday", "Sympathy", "Romance", "New Baby"];
 
 export default function AdminProducts() {
   const { products, addProduct, updateProduct, deleteProduct, loading } = useProducts();
@@ -9,100 +12,83 @@ export default function AdminProducts() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Helper to handle File Upload to Supabase Storage
+  // FIX: Deep clean strings for UI (removes [" "] and JSON artifacts)
+  const ensureString = (val) => {
+    if (!val) return "";
+    if (Array.isArray(val)) return val[0] || "";
+    if (typeof val === 'string' && val.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(val);
+        return Array.isArray(parsed) ? parsed[0] : val;
+      } catch (e) {
+        return val.replace(/[\[\]"]/g, '').replace(/^"|"$/g, ''); 
+      }
+    }
+    return val;
+  };
+
+  const ensureArray = (val) => {
+    const str = ensureString(val);
+    return str ? [str] : [];
+  };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file || isUploading) return;
-
     try {
       setIsUploading(true);
-      
-      // 1. Create a truly unique file path using timestamp and random string
       const fileExt = file.name.split('.').pop();
-      const uniqueID = Math.random().toString(36).substring(7);
-      const fileName = `${Date.now()}-${uniqueID}.${fileExt}`;
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `bouquets/${fileName}`;
-
-      // 2. Upload the file to the 'product-images' bucket
-      const { error: uploadError } = await supabase.storage
-        .from('product-images')
-        .upload(filePath, file, {
-            cacheControl: '3600',
-            upsert: false
-        });
-
+      const { error: uploadError } = await supabase.storage.from('product-images').upload(filePath, file);
       if (uploadError) throw uploadError;
-
-      // 3. Get the Public URL
-      const { data } = supabase.storage
-        .from('product-images')
-        .getPublicUrl(filePath);
-
-      // 4. Update the editing state with the new URL
+      const { data } = supabase.storage.from('product-images').getPublicUrl(filePath);
+      
       setEditing(prev => ({
         ...prev,
-        gallery: [data.publicUrl]
+        gallery: [data.publicUrl], // Reset gallery to new upload for simplicity
+        images: [data.publicUrl]
       }));
-
-    } catch (err) {
-      console.error("Upload error:", err);
-      alert("Failed to upload image: " + err.message);
-      setIsUploading(false); // Immediate unlock on error
-    } finally {
-      // 5. THE COOLDOWN: Wait 1 second before unlocking the button.
-      // This prevents the Codespace CLI from locking the 2nd upload attempt.
-      setTimeout(() => {
-        setIsUploading(false);
-      }, 1000);
-    }
+    } catch (err) { alert(err.message); } finally { setIsUploading(false); }
   };
 
   const handleSave = async () => {
-    if (!editing.name || !editing.price) return alert("Required: Name & Price");
-    
+    if (!editing.name || !editing.price) return alert("Name and Price required");
     try {
       setIsSaving(true);
-      
       const payload = {
         name: editing.name,
+        description: editing.description || "",
+        about: editing.about || "",
+        care: editing.care || "",
         price: parseFloat(editing.price),
-        category: editing.category || "General",
+        sale_price: editing.sale_price ? parseFloat(editing.sale_price) : null,
+        sku: editing.sku || "",
+        stock: parseInt(editing.stock) || 0,
         popular: Boolean(editing.popular),
-        gallery: Array.isArray(editing.gallery) ? editing.gallery : []
+        category: ensureArray(editing.category),
+        occasion: ensureArray(editing.occasion),
+        gallery: ensureArray(editing.gallery || editing.images),
+        images: ensureArray(editing.gallery || editing.images),
       };
 
-      if (editing.id) {
-        await updateProduct(editing.id, payload);
-      } else {
-        await addProduct(payload);
-      }
-      
+      const res = editing.id ? await updateProduct(editing.id, payload) : await addProduct(payload);
+      if (res?.error) throw res.error;
       setEditing(null);
-      alert("Bouquet saved successfully!");
-    } catch (err) {
-      console.error("Save failed:", err);
-      alert("Error: " + err.message);
-      // Ensure we unlock on failure
-      setIsSaving(false);
-    } finally {
-      setIsSaving(false);
-    }
+    } catch (err) { alert(`Save Failed: ${err.message}`); } finally { setIsSaving(false); }
   };
 
-  if (loading) return <div className="p-20 text-center font-serif italic text-stone-400">Opening the Boutique...</div>;
+  if (loading) return <div className="p-20 text-center font-serif italic text-stone-400">Loading Inventory...</div>;
 
   return (
     <div className="p-8 max-w-7xl mx-auto min-h-screen bg-stone-50/20">
       <div className="flex justify-between items-center mb-12">
         <div>
           <h1 className="text-4xl font-serif italic mb-2 text-stone-900">Inventory</h1>
-          <p className="text-stone-400 text-[10px] uppercase tracking-[0.3em] font-black">Liora Blooms Admin</p>
+          <p className="text-stone-400 text-[10px] uppercase tracking-[0.3em] font-black">Liora Bloom Administrative Suite</p>
         </div>
-        <button
-          onClick={() => setEditing({ name: "", price: "", category: "", gallery: [], popular: false })}
-          className="bg-stone-900 text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] flex gap-2 hover:bg-[#c5a059] transition-all shadow-xl"
-        >
-          <Plus size={14} /> Add New Bouquet
+        <button onClick={() => setEditing({})} className="bg-stone-900 text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] flex gap-2 hover:bg-[#c5a059] transition-all shadow-xl">
+          <Plus size={14} /> Add New Arrangement
         </button>
       </div>
 
@@ -110,31 +96,28 @@ export default function AdminProducts() {
         <table className="w-full text-sm">
           <thead className="bg-stone-50/50 text-stone-400 text-[10px] uppercase tracking-widest font-black">
             <tr>
-              <th className="p-8 text-left">Bouquet</th>
+              <th className="p-8 text-left">Arrangement</th>
               <th className="p-8 text-left">Category</th>
+              <th className="p-8 text-center">Stock</th>
               <th className="p-8 text-center">Price</th>
               <th className="p-8 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-50">
             {products.map((p) => (
-              <tr key={p.id} className="hover:bg-stone-50/30 transition-colors">
+              <tr key={p.id} className="hover:bg-stone-50/30 transition-colors group">
                 <td className="p-8">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-stone-100 rounded-lg overflow-hidden shrink-0 border border-stone-50">
-                      {p.gallery?.[0] && (
-                        <img 
-                          src={p.gallery[0]} 
-                          alt={p.name} 
-                          className="w-full h-full object-cover"
-                        />
-                      )}
-                    </div>
+                    <img src={ensureString(p.gallery || p.images)} className="w-12 h-12 object-cover rounded-lg border border-stone-100" alt="" />
                     <span className="font-bold text-stone-900 uppercase tracking-tight">{p.name}</span>
                   </div>
                 </td>
-                <td className="p-8 text-[10px] uppercase font-bold text-stone-400">{p.category}</td>
-                <td className="p-8 text-center font-serif italic">R {p.price}</td>
+                <td className="p-8">
+                  <span className="text-[10px] font-black uppercase text-stone-500 block">{ensureString(p.category)}</span>
+                  <span className="text-[10px] italic text-stone-400">{ensureString(p.occasion)}</span>
+                </td>
+                <td className="p-8 text-center font-bold text-stone-600">{p.stock}</td>
+                <td className="p-8 text-center font-serif italic text-lg text-[#c5a059]">R {p.price}</td>
                 <td className="p-8 text-right space-x-2">
                   <button onClick={() => setEditing(p)} className="p-3 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-full transition-all"><Edit size={14}/></button>
                   <button onClick={() => deleteProduct(p.id)} className="p-3 bg-stone-50 hover:bg-red-500 hover:text-white rounded-full transition-all"><Trash2 size={14}/></button>
@@ -146,87 +129,88 @@ export default function AdminProducts() {
       </div>
 
       {editing && (
-        <div className="fixed inset-0 bg-stone-900/40 backdrop-blur-md z-50 flex items-center justify-center p-6">
-          <div className="bg-white rounded-[3rem] w-full max-w-2xl shadow-2xl overflow-hidden">
-            <div className="p-10 border-b flex justify-between items-center">
-              <h2 className="text-3xl font-serif italic">{editing.id ? "Edit Bouquet" : "New Bouquet"}</h2>
-              <button onClick={() => setEditing(null)} className="p-2 hover:bg-stone-100 rounded-full transition-colors"><X size={24}/></button>
+        <div className="fixed inset-0 bg-stone-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-[3rem] w-full max-w-6xl shadow-2xl relative overflow-hidden">
+            <div className="p-8 border-b flex justify-between items-center bg-white">
+              <h2 className="text-3xl font-serif italic">Arrangement Details</h2>
+              <button onClick={() => setEditing(null)} className="p-2 hover:bg-stone-100 rounded-full"><X size={24}/></button>
             </div>
             
-            <div className="p-10 space-y-8">
-              {/* Image Preview & Upload */}
-              <div className="flex flex-col items-center justify-center">
-                <div className="w-40 h-40 bg-stone-50 rounded-3xl border-2 border-dashed border-stone-200 overflow-hidden relative group">
-                  {editing.gallery?.[0] ? (
-                    <img src={editing.gallery[0]} className="w-full h-full object-cover" alt="Preview" />
+            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-10 max-h-[75vh] overflow-y-auto">
+              <div className="space-y-6">
+                <div className="aspect-square bg-stone-50 rounded-3xl border-2 border-dashed border-stone-200 overflow-hidden relative">
+                  {ensureString(editing.gallery || editing.images) ? (
+                    <img src={ensureString(editing.gallery || editing.images)} className="w-full h-full object-cover" alt="" />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-stone-300">
-                      <Upload size={32} strokeWidth={1} />
-                      <span className="text-[10px] uppercase tracking-widest mt-2 font-bold">No Image</span>
-                    </div>
+                    <div className="w-full h-full flex flex-col items-center justify-center text-stone-300"><Upload size={32} /></div>
                   )}
-                  
-                  {isUploading && (
-                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
-                      <Loader2 className="animate-spin text-[#c5a059]" />
-                    </div>
-                  )}
+                  {isUploading && <div className="absolute inset-0 bg-white/80 flex items-center justify-center"><Loader2 className="animate-spin text-[#c5a059]" /></div>}
+                  <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} />
                 </div>
-                
-                <label className="mt-4 cursor-pointer">
-                  <span className={`text-[10px] font-black uppercase tracking-widest px-6 py-2 rounded-full transition-all ${isUploading ? 'bg-stone-200 text-stone-400' : 'bg-stone-100 hover:bg-stone-200'}`}>
-                    {isUploading ? "Uploading..." : editing.gallery?.[0] ? "Change Photo" : "Upload Photo"}
-                  </span>
-                  <input 
-                    type="file" 
-                    className="hidden" 
-                    accept="image/*" 
-                    onChange={handleFileUpload} 
-                    disabled={isUploading || isSaving} 
-                  />
-                </label>
+                <div className="flex items-center gap-3 p-4 bg-stone-50 rounded-2xl">
+                    <input type="checkbox" checked={editing.popular} onChange={e => setEditing({...editing, popular: e.target.checked})} className="accent-stone-900" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Featured Arrangement</span>
+                </div>
               </div>
 
-              <div className="space-y-6">
-                <input 
-                  placeholder="Bouquet Name" 
-                  value={editing.name} 
-                  onChange={e => setEditing({...editing, name: e.target.value})} 
-                  className="w-full border-b py-3 outline-none text-xl font-serif italic focus:border-stone-900 transition-colors" 
-                />
-                <div className="grid grid-cols-2 gap-6">
-                  <input 
-                    placeholder="Price (R)" 
-                    type="number" 
-                    value={editing.price} 
-                    onChange={e => setEditing({...editing, price: e.target.value})} 
-                    className="border-b py-3 outline-none focus:border-stone-900 transition-colors" 
-                  />
-                  <input 
-                    placeholder="Category" 
-                    value={editing.category} 
-                    onChange={e => setEditing({...editing, category: e.target.value})} 
-                    className="border-b py-3 outline-none focus:border-stone-900 transition-colors" 
-                  />
+              <div className="md:col-span-2 space-y-8">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+                  <div className="col-span-2 border-b border-stone-100 pb-2">
+                    <label className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">Arrangement Name</label>
+                    <input value={editing.name || ""} onChange={e => setEditing({...editing, name: e.target.value})} className="w-full py-2 outline-none text-2xl font-serif italic text-stone-900" />
+                  </div>
+                  
+                  <div className="border-b border-stone-100 pb-2">
+                    <label className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">Price (R)</label>
+                    <input type="number" value={editing.price || ""} onChange={e => setEditing({...editing, price: e.target.value})} className="w-full py-2 outline-none text-lg font-serif italic" />
+                  </div>
+
+                  <div className="border-b border-stone-100 pb-2">
+                    <label className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">Stock</label>
+                    <input type="number" value={editing.stock || ""} onChange={e => setEditing({...editing, stock: e.target.value})} className="w-full py-2 outline-none text-lg" />
+                  </div>
+
+                  <div className="border-b border-stone-100 pb-2 relative">
+                    <label className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">Category</label>
+                    <select value={ensureString(editing.category)} onChange={e => setEditing({...editing, category: e.target.value})} className="w-full py-2 outline-none bg-transparent appearance-none">
+                      <option value="">Select Category</option>
+                      {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <ChevronDown size={14} className="absolute right-0 bottom-3 text-stone-400 pointer-events-none" />
+                  </div>
+
+                  <div className="border-b border-stone-100 pb-2 relative">
+                    <label className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">Occasion</label>
+                    <select value={ensureString(editing.occasion)} onChange={e => setEditing({...editing, occasion: e.target.value})} className="w-full py-2 outline-none bg-transparent appearance-none">
+                      <option value="">Select Occasion</option>
+                      {OCCASIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                    <ChevronDown size={14} className="absolute right-0 bottom-3 text-stone-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Restored Text Areas */}
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-[9px] font-bold text-stone-400 uppercase block mb-2">Short Description</label>
+                    <textarea value={editing.description || ""} onChange={e => setEditing({...editing, description: e.target.value})} className="w-full bg-stone-50 rounded-2xl p-4 text-sm min-h-[80px] outline-none" placeholder="A brief overview of the flowers..." />
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold text-stone-400 uppercase block mb-2">Detailed About</label>
+                    <textarea value={editing.about || ""} onChange={e => setEditing({...editing, about: e.target.value})} className="w-full bg-stone-50 rounded-2xl p-4 text-sm min-h-[120px] outline-none" placeholder="The story behind this arrangement..." />
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold text-stone-400 uppercase block mb-2">Care Instructions</label>
+                    <textarea value={editing.care || ""} onChange={e => setEditing({...editing, care: e.target.value})} className="w-full bg-stone-50 rounded-2xl p-4 text-sm min-h-[100px] outline-none" placeholder="How to keep these blooms fresh..." />
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-10 border-t bg-stone-50/50 flex justify-end gap-6 items-center">
-              <button 
-                onClick={() => setEditing(null)} 
-                className="text-[10px] uppercase font-black tracking-widest text-stone-400 hover:text-stone-600 transition-colors"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleSave} 
-                disabled={isSaving || isUploading} 
-                className={`bg-stone-900 text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
-                  (isSaving || isUploading) ? "opacity-50 cursor-not-allowed" : "hover:bg-[#c5a059] shadow-lg active:scale-95"
-                }`}
-              >
-                {isSaving ? "Syncing..." : isUploading ? "Finalizing Image..." : "Save Bouquet"}
+            <div className="p-8 border-t bg-stone-50 flex justify-end gap-6">
+              <button onClick={() => setEditing(null)} className="text-[10px] uppercase font-black tracking-widest text-stone-400">Cancel</button>
+              <button onClick={handleSave} disabled={isSaving} className="bg-stone-900 text-white px-12 py-4 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#c5a059] shadow-lg disabled:opacity-50 transition-all">
+                {isSaving ? "Synchronizing..." : "Update Atelier"}
               </button>
             </div>
           </div>
